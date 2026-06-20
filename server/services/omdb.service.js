@@ -1,5 +1,5 @@
 const axios = require("axios");
-const OMDB_API_KEY = "a0f0fad7"; // Replace with a valid OMDB key
+const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
 module.exports.searchMovies = async (criteria) => {
   const resp = await axios.get(
