@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 function HomePage() {
   const [featured, setFeatured] = useState(null);
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  const { user } = useAuth();
 
   useEffect(() => {
-    axios.get("http://localhost:5500/api/featured").then((res) => {
-      setFeatured(res.data.featuredMovie);
+    api.get("/api/featured").then((res) => {
+      const imdbID = res.data.featuredMovie;
+      if (!imdbID) return;
+      api.get(`/api/movies/${imdbID}`).then((movieRes) => setFeatured(movieRes.data));
     });
   }, []);
 
@@ -69,8 +69,8 @@ function HomePage() {
         {featured && (
           <div className="card mb-4 shadow-sm">
             <div className="card-body">
-              <h5 className="card-title">About Featured Movie</h5>
-              <p className="card-text mb-2">{featured.description}</p>
+              <h5 className="card-title">Featured: {featured.Title}</h5>
+              <p className="card-text mb-2">{featured.Plot}</p>
               <p className="text-muted" style={{ fontSize: "0.9rem" }}>
                 Discover more movies and TV shows by browsing our library!
               </p>
@@ -78,14 +78,14 @@ function HomePage() {
           </div>
         )}
 
-        {!token && (
+        {!user && (
           <div className="alert alert-info">
             <strong>Tip:</strong> Create an account or log in to bookmark your
             favorite movies and leave reviews.
           </div>
         )}
 
-        {token && user && (
+        {user && (
           <div className="alert alert-success">
             Logged in as <strong>{user.username}</strong>. Feel free to{" "}
             <Link to="/profile">edit your profile</Link> or{" "}

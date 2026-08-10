@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 function ProfilePage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ bio: "", email: "" });
-  const token = localStorage.getItem("token");
-
-  const headers = token ? { Authorization: "Bearer " + token } : {};
 
   useEffect(() => {
-    const endpoint = id
-      ? `http://localhost:5500/api/users/${id}`
-      : "http://localhost:5500/api/auth/profile";
-    axios.get(endpoint, { headers }).then((res) => {
+    const endpoint = id ? `/api/users/${id}` : "/api/auth/profile";
+    api.get(endpoint).then((res) => {
       setProfile(res.data);
       if (!id) {
         setFormData({ bio: res.data.bio || "", email: res.data.email || "" });
@@ -35,11 +32,7 @@ function ProfilePage() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        "http://localhost:5500/api/users",
-        formData,
-        { headers }
-      );
+      const response = await api.put("/api/users", formData);
       setProfile(response.data);
       setIsEditing(false);
     } catch (error) {
@@ -56,7 +49,7 @@ function ProfilePage() {
       <p>Email: {profile.email || "N/A"}</p>
       <p>Bio: {profile.bio || "N/A"}</p>
 
-      {!id && token && (
+      {!id && user && (
         <div>
           <button className="btn btn-secondary mb-3" onClick={handleEditToggle}>
             {isEditing ? "Cancel" : "Edit Profile"}

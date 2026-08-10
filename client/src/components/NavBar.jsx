@@ -1,16 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function NavBar() {
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const handleSignOut = async () => {
+    await logout();
     navigate("/login");
   };
 
@@ -27,7 +24,7 @@ function NavBar() {
         </Link>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
-            {!token && (
+            {!user && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login">
@@ -41,7 +38,7 @@ function NavBar() {
                 </li>
               </>
             )}
-            {token && (
+            {user && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/profile">

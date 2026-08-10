@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/client";
 
 function AdminPage() {
   const [featured, setFeatured] = useState("");
   const [current, setCurrent] = useState(null);
-  const token = localStorage.getItem("token");
-  const headers = { Authorization: "Bearer " + token };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5500/api/featured")
+    api
+      .get("/api/featured")
       .then((res) => setCurrent(res.data.featuredMovie));
   }, []);
 
   const handleSet = async (e) => {
     e.preventDefault();
-    const res = await axios.post(
-      "http://localhost:5500/api/featured",
-      { imdbID: featured },
-      { headers }
-    );
+    const res = await api.post("/api/featured", { imdbID: featured });
     setCurrent(res.data.featuredMovie);
   };
 

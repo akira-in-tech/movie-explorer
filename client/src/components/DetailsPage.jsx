@@ -1,40 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 function DetailsPage() {
   const { imdbID } = useParams();
+  const { user } = useAuth();
   const [movie, setMovie] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [text, setText] = useState("");
   const [rating, setRating] = useState("");
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios
-      .get(`http://www.omdbapi.com/?i=${imdbID}&apikey=a0f0fad7`)
-      .then((res) => setMovie(res.data));
-
-    axios
-      .get(`http://localhost:5500/api/reviews?movieId=${imdbID}`)
+    api.get(`/api/movies/${imdbID}`).then((res) => setMovie(res.data));
+    api
+      .get(`/api/reviews?movieId=${imdbID}`)
       .then((res) => setReviews(res.data));
   }, [imdbID]);
 
   const handleReview = async (e) => {
     e.preventDefault();
-    if (!token) {
+    if (!user) {
       alert("Please login to review");
       return;
     }
-    const headers = { Authorization: "Bearer " + token };
-    await axios.post(
-      "http://localhost:5500/api/reviews",
-      { movieId: imdbID, text, rating },
-      { headers }
-    );
-    const updated = await axios.get(
-      `http://localhost:5500/api/reviews?movieId=${imdbID}`
-    );
+    await api.post("/api/reviews", { movieId: imdbID, text, rating });
+    const updated = await api.get(`/api/reviews?movieId=${imdbID}`);
     setReviews(updated.data);
     setText("");
     setRating("");
@@ -57,7 +48,7 @@ function DetailsPage() {
           </p>
         </div>
       ))}
-      {token && (
+      {user && (
         <form onSubmit={handleReview}>
           <textarea
             className="form-control mb-2"

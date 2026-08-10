@@ -1,14 +1,23 @@
-// Simple admin-only controller to manage a "featured" movie list in memory
-let featuredMovie = null;
+const Featured = require("../models/featured.model");
+const asyncHandler = require("../utils/asyncHandler");
 
-module.exports.getFeatured = (req, res) => {
-  res.json({ featuredMovie });
-};
+async function getSingleton() {
+  let doc = await Featured.findOne();
+  if (!doc) doc = await Featured.create({});
+  return doc;
+}
 
-module.exports.setFeatured = (req, res) => {
+module.exports.getFeatured = asyncHandler(async (req, res) => {
+  const doc = await getSingleton();
+  res.json({ featuredMovie: doc.imdbID });
+});
+
+module.exports.setFeatured = asyncHandler(async (req, res) => {
   if (req.user.role !== "ADMIN")
     return res.status(403).json({ error: "Forbidden" });
   const { imdbID } = req.body;
-  featuredMovie = imdbID;
-  res.json({ featuredMovie });
-};
+  const doc = await getSingleton();
+  doc.imdbID = imdbID;
+  await doc.save();
+  res.json({ featuredMovie: doc.imdbID });
+});
