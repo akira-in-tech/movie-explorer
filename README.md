@@ -95,6 +95,8 @@ npm --prefix client audit --omit=dev
 
 The included [`render.yaml`](render.yaml) deploys the frontend and backend as one Render Web Service. A free Render instance sleeps after periods of inactivity, so the first request after sleep can take about a minute.
 
+The Blueprint explicitly includes frontend development dependencies during the Render build because Vite is a build-time dependency even when `NODE_ENV=production`.
+
 ### 1. Create the free database
 
 1. Create a MongoDB Atlas project and a Free (`M0`) cluster.
