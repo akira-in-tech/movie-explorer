@@ -7,5 +7,6 @@ router.get("/:id", userController.getProfile);
 router.put("/", authMiddleware, userController.updateProfile);
 router.post("/follow/:id", authMiddleware, userController.follow);
 router.post("/bookmark/:imdbID", authMiddleware, userController.bookmark);
+router.delete("/bookmark/:imdbID", authMiddleware, userController.removeBookmark);
 
 module.exports = router;

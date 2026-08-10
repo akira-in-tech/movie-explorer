@@ -39,6 +39,15 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="*"
+            element={
+              <div className="text-center py-5">
+                <h2>Page not found</h2>
+                <p>The page you requested does not exist.</p>
+              </div>
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>

@@ -5,14 +5,21 @@ import { useAuth } from "../context/AuthContext";
 
 function HomePage() {
   const [featured, setFeatured] = useState(null);
+  const [featuredError, setFeaturedError] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
-    api.get("/api/featured").then((res) => {
-      const imdbID = res.data.featuredMovie;
-      if (!imdbID) return;
-      api.get(`/api/movies/${imdbID}`).then((movieRes) => setFeatured(movieRes.data));
-    });
+    api
+      .get("/api/featured")
+      .then((res) => {
+        const imdbID = res.data.featuredMovie;
+        if (!imdbID) return null;
+        return api.get(`/api/movies/${imdbID}`);
+      })
+      .then((movieRes) => {
+        if (movieRes) setFeatured(movieRes.data);
+      })
+      .catch(() => setFeaturedError(true));
   }, []);
 
   return (
@@ -75,6 +82,12 @@ function HomePage() {
                 Discover more movies and TV shows by browsing our library!
               </p>
             </div>
+          </div>
+        )}
+
+        {featuredError && (
+          <div className="alert alert-warning" role="status">
+            Featured content is temporarily unavailable. Movie search is still available.
           </div>
         )}
 

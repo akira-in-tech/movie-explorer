@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 
-const MONGODB_URI =
-  process.env.MONGO_CONNECTION_STRING ||
-  "mongodb://127.0.0.1:27017/movie-explorer";
+async function connectDB(uri) {
+  await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
+  console.log("MongoDB connected");
+}
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+async function disconnectDB() {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+}
+
+module.exports = { connectDB, disconnectDB };

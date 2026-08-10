@@ -2,20 +2,22 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("../utils/asyncHandler");
+const { isValidEmail } = require("../utils/validation");
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-};
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+function getCookieOptions(env = process.env) {
+  return {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
 }
 
 module.exports.register = asyncHandler(async (req, res) => {
-  const { username, password, email } = req.body;
+  const username = req.body.username?.trim();
+  const password = req.body.password;
+  const email = req.body.email?.trim().toLowerCase();
 
   if (!username || !password || !email) {
     return res.status(400).json({ error: "Username, email and password are required" });
@@ -27,8 +29,10 @@ module.exports.register = asyncHandler(async (req, res) => {
     return res.status(400).json({ error: "Invalid email address" });
   }
 
-  const existing = await User.findOne({ username });
-  if (existing) return res.status(400).json({ error: "Username taken" });
+  const existing = await User.findOne({ $or: [{ username }, { email }] });
+  if (existing) {
+    return res.status(409).json({ error: "Username or email is already in use" });
+  }
 
   const hash = await bcrypt.hash(password, 10);
   // role is intentionally never taken from the request body — it always
@@ -37,19 +41,20 @@ module.exports.register = asyncHandler(async (req, res) => {
 
   const safeUser = user.toObject();
   delete safeUser.password;
-  res.json(safeUser);
+  res.status(201).json(safeUser);
 });
 
 module.exports.login = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const username = req.body.username?.trim();
+  const password = req.body.password;
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password are required" });
   }
 
   const user = await User.findOne({ username });
-  if (!user) return res.status(400).json({ error: "User not found" });
+  if (!user) return res.status(401).json({ error: "Invalid credentials" });
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(400).json({ error: "Invalid password" });
+  if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
   const token = jwt.sign(
     { userId: user._id, role: user.role },
@@ -60,16 +65,19 @@ module.exports.login = asyncHandler(async (req, res) => {
   const safeUser = user.toObject();
   delete safeUser.password;
 
-  res.cookie("token", token, COOKIE_OPTIONS);
+  res.cookie("token", token, getCookieOptions());
   res.json({ user: safeUser });
 });
 
 module.exports.logout = (req, res) => {
-  res.clearCookie("token", COOKIE_OPTIONS);
+  res.clearCookie("token", getCookieOptions());
   res.json({ message: "Logged out" });
 };
 
 module.exports.profile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.userId).select("-password");
+  if (!user) return res.status(404).json({ error: "User not found" });
   res.json(user);
 });
+
+module.exports.getCookieOptions = getCookieOptions;

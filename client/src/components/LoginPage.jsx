@@ -29,6 +29,8 @@ function LoginPage() {
         <div className="mb-3">
           <label>Username</label>
           <input
+            required
+            autoComplete="username"
             placeholder="Username"
             className="form-control"
             value={username}
@@ -39,6 +41,8 @@ function LoginPage() {
           <label>Password</label>
           <input
             type="password"
+            required
+            autoComplete="current-password"
             placeholder="Password"
             className="form-control"
             value={password}

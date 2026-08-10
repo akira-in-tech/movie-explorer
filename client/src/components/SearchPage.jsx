@@ -6,6 +6,8 @@ function SearchPage() {
   const { criteria } = useParams();
   const [query, setQuery] = useState(criteria || "");
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
@@ -17,9 +19,18 @@ function SearchPage() {
 
   useEffect(() => {
     if (criteria) {
+      setLoading(true);
+      setError("");
       api
         .get(`/api/movies/search?q=${encodeURIComponent(criteria)}`)
-        .then((res) => setResults(res.data.results || []));
+        .then((res) => setResults(res.data.results || []))
+        .catch(() => {
+          setResults([]);
+          setError("Movie search is temporarily unavailable. Please try again.");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setResults([]);
     }
   }, [criteria]);
 
@@ -39,7 +50,11 @@ function SearchPage() {
         />
         <button className="btn btn-primary">Search</button>
       </form>
-      {results.length > 0 ? (
+      {loading ? (
+        <div className="text-center mt-4" role="status">Searching…</div>
+      ) : error ? (
+        <div className="alert alert-danger" role="alert">{error}</div>
+      ) : results.length > 0 ? (
         <div className="row">
           {results.map((r) => (
             <div key={r.imdbID} className="col-md-3 col-sm-6 mb-3">

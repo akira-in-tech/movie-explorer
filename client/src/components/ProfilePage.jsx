@@ -9,15 +9,20 @@ function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ bio: "", email: "" });
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const endpoint = id ? `/api/users/${id}` : "/api/auth/profile";
-    api.get(endpoint).then((res) => {
-      setProfile(res.data);
-      if (!id) {
-        setFormData({ bio: res.data.bio || "", email: res.data.email || "" });
-      }
-    });
+    setError("");
+    api
+      .get(endpoint)
+      .then((res) => {
+        setProfile(res.data);
+        if (!id) {
+          setFormData({ bio: res.data.bio || "", email: res.data.email || "" });
+        }
+      })
+      .catch(() => setError("Profile is temporarily unavailable."));
   }, [id]);
 
   const handleEditToggle = () => {
@@ -37,15 +42,18 @@ function ProfilePage() {
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      setError(error.response?.data?.error || "Failed to update profile.");
     }
   };
 
-  if (!profile) return <div>Loading...</div>;
+  if (!profile) {
+    return error ? <div className="alert alert-danger">{error}</div> : <div>Loading…</div>;
+  }
 
   return (
     <div>
       <h2>{id ? `${profile.username}'s Profile` : "Your Profile"}</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
       <p>Email: {profile.email || "N/A"}</p>
       <p>Bio: {profile.bio || "N/A"}</p>
 
