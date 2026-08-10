@@ -4,6 +4,8 @@
 
 Movie Explorer is a full-stack movie discovery app built by Akira. Search the OMDb catalog, inspect movie details, create an account, publish reviews, bookmark titles, follow other users, and curate featured content from an admin account.
 
+**Live demo:** [movie-explorer-qpz6.onrender.com](https://movie-explorer-qpz6.onrender.com)
+
 ## Features
 
 - Movie search and detail pages powered by OMDb
