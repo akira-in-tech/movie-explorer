@@ -29,6 +29,10 @@ function RegisterPage() {
             <div className="mb-3">
               <label className="form-label">Username</label>
               <input
+                required
+                minLength="3"
+                maxLength="40"
+                autoComplete="username"
                 placeholder="Username"
                 className="form-control"
                 value={username}
@@ -38,8 +42,10 @@ function RegisterPage() {
             <div className="mb-3">
               <label className="form-label">Email</label>
               <input
+                required
                 placeholder="Email"
                 type="email"
+                autoComplete="email"
                 className="form-control"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -49,6 +55,9 @@ function RegisterPage() {
               <label className="form-label">Password</label>
               <input
                 type="password"
+                required
+                minLength="8"
+                autoComplete="new-password"
                 placeholder="Password"
                 className="form-control"
                 value={password}

@@ -1,34 +1,49 @@
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") }); // Must be before requiring db
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const mongoose = require("mongoose");
-require("./config/db"); // now environment variables are loaded before db connection
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
-const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/user.routes");
-const reviewRoutes = require("./routes/review.routes");
-const featuredRoutes = require("./routes/featured.routes");
-const movieRoutes = require("./routes/movie.routes");
+const { createApp } = require("./app");
+const { connectDB, disconnectDB } = require("./config/db");
+const { validateEnv } = require("./config/env");
 
-const app = express();
+async function startServer() {
+  const config = validateEnv();
+  await connectDB(config.mongoUri);
 
-const PORT = process.env.PORT || 5500;
-app.use(cors({ origin: process.env.NETLIFY_URL || "http://localhost:3001", credentials: true }));
-app.use(express.json());
-app.use(cookieParser());
+  const app = createApp(config);
+  const server = app.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
+  });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/featured", featuredRoutes);
-app.use("/api/movies", movieRoutes);
+  let shuttingDown = false;
+  const shutdown = async (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log(`${signal} received; shutting down`);
 
-// centralized error handler — catches errors passed via next(err) from asyncHandler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || "Server error" });
-});
+    server.close(async () => {
+      try {
+        await disconnectDB();
+        process.exit(0);
+      } catch (error) {
+        console.error("Graceful shutdown failed", error);
+        process.exit(1);
+      }
+    });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    setTimeout(() => process.exit(1), 10000).unref();
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+
+  return server;
+}
+
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("Server failed to start", error);
+    process.exit(1);
+  });
+}
+
+module.exports = { startServer };

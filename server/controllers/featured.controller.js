@@ -15,7 +15,10 @@ module.exports.getFeatured = asyncHandler(async (req, res) => {
 module.exports.setFeatured = asyncHandler(async (req, res) => {
   if (req.user.role !== "ADMIN")
     return res.status(403).json({ error: "Forbidden" });
-  const { imdbID } = req.body;
+  const imdbID = req.body.imdbID?.trim();
+  if (!/^tt\d{7,10}$/.test(imdbID || "")) {
+    return res.status(400).json({ error: "Invalid IMDb ID" });
+  }
   const doc = await getSingleton();
   doc.imdbID = imdbID;
   await doc.save();
