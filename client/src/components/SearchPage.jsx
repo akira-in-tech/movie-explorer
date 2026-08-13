@@ -41,19 +41,29 @@ function SearchPage() {
         onSubmit={handleSearch}
         className="mb-4 d-flex justify-content-center"
       >
+        <label className="visually-hidden" htmlFor="movie-search-query">
+          Movie title
+        </label>
         <input
+          id="movie-search-query"
           placeholder="Search for a movie..."
           className="form-control me-2"
           style={{ maxWidth: "300px" }}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button className="btn btn-primary">Search</button>
+        <button className="btn btn-primary" type="submit">
+          Search
+        </button>
       </form>
       {loading ? (
-        <div className="text-center mt-4" role="status">Searching…</div>
+        <div className="text-center mt-4" role="status" aria-live="polite">
+          Searching…
+        </div>
       ) : error ? (
-        <div className="alert alert-danger" role="alert">{error}</div>
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
       ) : results.length > 0 ? (
         <div className="row">
           {results.map((r) => (

@@ -23,56 +23,29 @@ function HomePage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#000" }}>
-      {/* Hero Section */}
-      <div
-        className="hero-section text-white"
-        style={{
-          position: "relative",
-          height: "80vh",
-          background: "url('/netflix.jpg') no-repeat center center/cover", // Set the image as the background
-        }}
-      >
-        {/* Semi-transparent Overlay */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))",
-            zIndex: 1,
-          }}
-        ></div>
-
-        {/* Text Content */}
-        <div
-          className="text-center d-flex flex-column justify-content-center align-items-center"
-          style={{
-            position: "relative",
-            height: "100%",
-            zIndex: 2,
-          }}
-        >
-          <h1 className="display-4 fw-bold">Welcome to Movie Explorer</h1>
-          <p className="lead mb-4" style={{ maxWidth: "600px" }}>
-            Discover amazing movies and TV shows in a sleek new way.
+    <div className="movie-home">
+      <section className="movie-hero text-white">
+        <div className="movie-hero-content text-center d-flex flex-column justify-content-center align-items-center">
+          <p className="movie-eyebrow">YOUR NEXT GREAT WATCH</p>
+          <h1 className="display-3 fw-bold">Find a story worth your time.</h1>
+          <p className="lead mb-4 movie-hero-copy">
+            Search the catalog, compare community reviews, and keep a personal
+            watchlist in one focused workspace.
           </p>
           <div>
-            <Link to="/login" className="btn btn-primary btn-lg me-3">
-              Get Started
-            </Link>
+            {!user && (
+              <Link to="/register" className="btn btn-primary btn-lg me-3">
+                Create account
+              </Link>
+            )}
             <Link to="/search" className="btn btn-outline-light btn-lg">
-              Browse Movies
+              Explore movies
             </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content Section */}
-      <div className="container mt-5">
+      <main className="container py-5">
         {featured && (
           <div className="card mb-4 shadow-sm">
             <div className="card-body">
@@ -87,7 +60,8 @@ function HomePage() {
 
         {featuredError && (
           <div className="alert alert-warning" role="status">
-            Featured content is temporarily unavailable. Movie search is still available.
+            Featured content is temporarily unavailable. Movie search is still
+            available.
           </div>
         )}
 
@@ -105,39 +79,10 @@ function HomePage() {
             <Link to="/search">search for a movie</Link>.
           </div>
         )}
-      </div>
+      </main>
 
-      {/* Footer Section */}
-      <footer
-        className="text-center py-3"
-        style={{
-          backgroundColor: "#343a40", // Dark gray background for good contrast
-          color: "#ffffff", // White text for visibility
-        }}
-      >
-        <small>
-          <Link
-            to="#"
-            style={{
-              color: "#adb5bd", // Light gray for links
-              textDecoration: "none",
-              marginRight: "10px",
-            }}
-          >
-            Privacy Policy
-          </Link>
-          |
-          <Link
-            to="#"
-            style={{
-              color: "#adb5bd", // Light gray for links
-              textDecoration: "none",
-              marginLeft: "10px",
-            }}
-          >
-            Terms of Service
-          </Link>
-        </small>
+      <footer className="movie-footer text-center py-4">
+        <small>Movie data is provided by OMDb. Built as a portfolio demo.</small>
       </footer>
     </div>
   );

@@ -14,6 +14,7 @@ Movie Explorer is a full-stack movie discovery app built by Akira. Search the OM
 - Ratings and reviews with server-side validation
 - Role-protected featured-movie administration
 - Responsive React interface with explicit loading and failure states
+- Original, responsive discovery hero without third-party brand artwork
 - Production health check, graceful shutdown, security headers, and CORS allowlisting
 
 ## Architecture
@@ -35,6 +36,7 @@ In production, Express serves both the built React application and the API from 
 | Database | MongoDB |
 | Authentication | JWT, bcrypt, HTTP-only cookies |
 | Security | Helmet, input validation, CORS allowlist, auth rate limiting |
+| Testing | Node test runner, Supertest, Vitest, Testing Library, Playwright |
 | CI/CD | GitHub Actions, Render Blueprint |
 
 ## Local development
@@ -87,11 +89,12 @@ npm run dev
 ```bash
 npm test
 npm run build
+npm run test:e2e
 npm audit --omit=dev
 npm --prefix client audit --omit=dev
 ```
 
-`npm run check` runs the local test and production-build checks together. The test suite covers environment validation, cookie and CORS security settings, model constraints, and authentication rate limiting.
+`npm run check` runs backend tests, frontend component tests, and a production build. Playwright verifies the browser experience in Chromium, including the degraded featured-content state and a backend-unavailable login response. The server suite covers environment validation, cookie and CORS security settings, model constraints, health behavior, and authentication rate limiting.
 
 ## Free deployment on Render
 
@@ -157,6 +160,7 @@ Only variables prefixed with `VITE_` are exposed to the browser. Never put datab
 movie-explorer/
 ├── .github/workflows/ci.yml
 ├── client/                 # React/Vite frontend
+├── e2e/                    # Playwright product-state checks
 ├── server/
 │   ├── config/             # Environment, database, and auth configuration
 │   ├── controllers/

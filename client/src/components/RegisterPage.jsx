@@ -24,11 +24,18 @@ function RegisterPage() {
       <div className="card shadow-sm">
         <div className="card-body">
           <h2 className="card-title mb-4 text-center">Create an Account</h2>
-          {error && <div className="alert alert-danger">{error}</div>}
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleRegister}>
             <div className="mb-3">
-              <label className="form-label">Username</label>
+              <label className="form-label" htmlFor="register-username">
+                Username
+              </label>
               <input
+                id="register-username"
                 required
                 minLength="3"
                 maxLength="40"
@@ -40,8 +47,11 @@ function RegisterPage() {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Email</label>
+              <label className="form-label" htmlFor="register-email">
+                Email
+              </label>
               <input
+                id="register-email"
                 required
                 placeholder="Email"
                 type="email"
@@ -52,8 +62,11 @@ function RegisterPage() {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Password</label>
+              <label className="form-label" htmlFor="register-password">
+                Password
+              </label>
               <input
+                id="register-password"
                 type="password"
                 required
                 minLength="8"

@@ -11,4 +11,59 @@ body {
   font-weight: 600;
 }
 
-/* etc. */
+.movie-home {
+  min-height: 100vh;
+  margin: -1rem calc(50% - 50vw) 0;
+  background: #080b12;
+  color: #f8f9fa;
+}
+
+.movie-hero {
+  position: relative;
+  min-height: 72vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(111, 76, 255, 0.55), transparent 32%),
+    radial-gradient(circle at 82% 68%, rgba(0, 179, 164, 0.32), transparent 28%),
+    linear-gradient(135deg, #11162a 0%, #080b12 58%, #151022 100%);
+}
+
+.movie-hero::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.16;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.movie-hero-content {
+  position: relative;
+  z-index: 1;
+  min-height: 72vh;
+  padding: 4rem 1.5rem;
+}
+
+.movie-eyebrow {
+  color: #9fcbff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.movie-hero-copy {
+  max-width: 640px;
+  color: #c9ceda;
+}
+
+.movie-footer {
+  color: #aab1c0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.route-status {
+  padding: 3rem 1rem;
+  text-align: center;
+}

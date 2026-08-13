@@ -5,7 +5,8 @@
   "scripts": {
     "build": "npm --prefix client run build",
     "test": "node --test server/tests/*.test.js",
-    "check": "npm test && npm run build",
+    "check": "npm test && npm --prefix client test && npm run build",
+    "test:e2e": "playwright test",
     "admin:promote": "node server/scripts/promote-admin.js",
     "start": "node server/server.js",
     "server": "nodemon server/server.js",
@@ -36,6 +37,7 @@
     "mongoose": "^8.8.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7",
     "supertest": "^7.2.2"

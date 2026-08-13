@@ -25,8 +25,22 @@ jobs:
       - name: Install client dependencies
         run: npm --prefix client ci
       - name: Test
-        run: npm test
-      - name: Build
-        run: npm run build
+        run: npm run check
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high && npm --prefix client audit --omit=dev --audit-level=high
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
+      - run: npm ci
+      - run: npm --prefix client ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=chromium

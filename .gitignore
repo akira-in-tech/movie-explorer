@@ -9,6 +9,8 @@ node_modules/
 # Build output
 build/
 dist/
+playwright-report/
+test-results/
 
 # OS
 .DS_Store
